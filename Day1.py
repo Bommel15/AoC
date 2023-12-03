@@ -6,7 +6,6 @@ from functools import total_ordering
 import re
 import sys
 
-
 input = ["""99lbqpxzzlbtvkmfrvrnmcxttseven
 q7cnfslbtpkvseven
 6threezlljtzcr1sdjkthree4cx
@@ -1009,7 +1008,7 @@ fivexpx1vsrreightkp7dph
 xcntwone4633sixmkm1nine"""]
 
 # Getting data
-split = str(input).split("\\")
+split = str(input).lower().split("\\")
 
 # Init
 matches = []
@@ -1024,53 +1023,49 @@ lookup_dict = {
     "six": 6,
     "seven": 7,
     "eight": 8,
-    "nine":9
+    "nine":9,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+    "0": 0
 }
 
-# Generate regex
+# Constants
 keys = list(lookup_dict.keys())
-re1 = ["\\d+"]
-keys = keys + re1
+idxs = list(range(1000))
 
 # Parse rows
 for row in split:
-
     # Filter out special chars
     row = ''.join(e for e in row if e.isalnum())
-    
-    print(row)
-    # sys.exit()
 
+    key_idxs = dict.fromkeys(idxs) # Init the dict
+    # Find keys
     for key in keys:
-        print(key)
+        if re.search(fr"{key}",row):
+            key_idx = row.index(key)
+            key_idxs[key_idx] = key
 
-        row_data = re.search(key, row[position:])
+        key_idxs = {k: v for k, v in key_idxs.items() if v is not None} # Trim the None items
+        key_idxs = dict(sorted(key_idxs.items()))
+    
+    min_row_idx = min(key_idxs.keys())
+    max_row_idx = max(key_idxs.keys())
 
-    # print(row_data)
-    # sys.exit()
-
-    if row_data:
-        # Itterate position
-        position += row_data.end()
-
-        # Append to the row
-        matches.append(row_data.group())
-
-    print(matches)
-    sys.exit()
-
-    if matches[0] in keys:
-        first_num = lookup_dict[matches[0]]
-    else:
-        first_num = int(row[0][0])
-
-    if matches[-1] in keys:
-        last_num = lookup_dict[matches[-1]]
-    else:
-        last_num = int(row[-1][-1])
-        
-    row = first_num*10 + last_num
-    total = total + row
+    min_value = key_idxs[min_row_idx]
+    max_value = key_idxs[max_row_idx]
+    
+    min_value = lookup_dict[min_value]
+    max_value = lookup_dict[max_value]
+    
+    value = min_value*10 + max_value
+    total = total + value
 
 print(total)
     
